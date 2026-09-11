@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nokia Classic Retro Phone - محاكي نوكيا الكلاسيكي الكامل</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Tajawal:wght@400;700;900&family=VT323&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 15px;
+            user-select: none;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Phone Body Frame */
+        .nokia-body {
+            background: linear-gradient(180deg, #2a324b 0%, #171c28 100%);
+            border: 4px solid #38bdf8;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 
+                        inset 0 2px 5px rgba(255, 255, 255, 0.25),
+                        0 0 35px rgba(56, 189, 248, 0.25);
+            border-radius: 36px;
+            width: 340px;
+            padding: 18px 16px 22px 16px;
+            position: relative;
+        }
+
+        /* Screen Bezel */
+        .nokia-screen-bezel {
+            background: #000000;
+            border: 3px solid #334155;
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.9);
+        }
+
+        .nokia-screen {
+            background-color: #0b1329;
+            width: 100%;
+            height: 270px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+        }
+
+        /* Keypad Styling */
+        .nokia-btn {
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            color: #f8fafc;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 0 #0f172a, inset 0 1px 0 rgba(255,255,255,0.25);
+            border-radius: 10px;
+            transition: all 0.05s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nokia-btn:active, .nokia-btn.btn-pressed {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0f172a, inset 0 1px 0 rgba(255,255,255,0.1);
+            background: #2563eb !important;
+            color: #ffffff !important;
+        }
+
+        .dpad-btn {
+            background: linear-gradient(180deg, #475569 0%, #334155 100%);
+            border-color: #64748b;
+        }
+
+        .pixel-text {
+            font-family: 'VT323', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nokia-body">
+        
+        <!-- Speaker Grill & Brand -->
+        <div class="flex flex-col items-center mb-2">
+            <div class="w-12 h-1.5 bg-slate-700 rounded-full mb-1"></div>
+            <div class="text-xs tracking-widest text-slate-300 font-extrabold uppercase font-sans">NOKIA</div>
+        </div>
+
+        <!-- Display Screen -->
+        <div class="nokia-screen-bezel mb-3">
+            <div id="screen" class="nokia-screen">
+
+                <!-- Top Bar -->
+                <div class="h-6 bg-blue-900/90 text-white text-[11px] px-2 flex justify-between items-center border-b border-blue-700/50">
+                    <div class="flex items-center space-x-1 space-x-reverse">
+                        <i class="fa-solid fa-signal text-[9px] text-green-400"></i>
+                        <span class="text-[9px] font-mono">NOKIA</span>
+                    </div>
+                    <div id="status-clock" class="font-mono font-bold text-yellow-300">12:00</div>
+                    <div class="flex items-center space-x-1 space-x-reverse">
+                        <i class="fa-solid fa-battery-full text-green-400 text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Main Viewport -->
+                <div id="app-viewport" class="h-[222px] w-full relative">
+                    <!-- Dynamic screen content -->
+                </div>
+
+                <!-- Bottom Softkeys Bar -->
+                <div class="h-5 bg-slate-900 text-white text-[10px] px-3 flex justify-between items-center border-t border-slate-800">
+                    <span id="left-soft-label" class="text-blue-300 font-bold">القائمة</span>
+                    <span id="center-soft-label" class="text-yellow-400 text-[9px]">اختيار</span>
+                    <span id="right-soft-label" class="text-red-300 font-bold">الأسماء</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls: Softkeys + D-Pad -->
+        <div class="grid grid-cols-3 gap-2 mb-2 px-1">
+            <button id="btn-LSK" class="nokia-btn h-9 text-xs font-bold text-blue-300" onclick="handleInput('LSK')">____</button>
+            <button id="btn-UP" class="nokia-btn dpad-btn h-9 text-xs font-bold text-yellow-400" onclick="handleInput('UP')"><i class="fa-solid fa-caret-up text-base"></i></button>
+            <button id="btn-RSK" class="nokia-btn h-9 text-xs font-bold text-red-300" onclick="handleInput('RSK')">____</button>
+
+            <button id="btn-LEFT" class="nokia-btn dpad-btn h-9 text-xs font-bold text-yellow-400" onclick="handleInput('LEFT')"><i class="fa-solid fa-caret-left text-base"></i></button>
+            <button id="btn-OK" class="nokia-btn dpad-btn h-9 text-xs font-bold bg-blue-600 text-white" onclick="handleInput('OK')">OK</button>
+            <button id="btn-RIGHT" class="nokia-btn dpad-btn h-9 text-xs font-bold text-yellow-400" onclick="handleInput('RIGHT')"><i class="fa-solid fa-caret-right text-base"></i></button>
+
+            <button id="btn-CALL" class="nokia-btn h-9 bg-green-900/80 text-green-400 border-green-600" onclick="handleInput('CALL')">
+                <i class="fa-solid fa-phone text-xs"></i>
+            </button>
+            <button id="btn-DOWN" class="nokia-btn dpad-btn h-9 text-xs font-bold text-yellow-400" onclick="handleInput('DOWN')"><i class="fa-solid fa-caret-down text-base"></i></button>
+            <button id="btn-END" class="nokia-btn h-9 bg-red-900/80 text-red-400 border-red-600" onclick="handleInput('END')">
+                <i class="fa-solid fa-phone-slash text-xs"></i>
+            </button>
+        </div>
+
+        <!-- 3x4 Number Keypad -->
+        <div class="grid grid-cols-3 gap-1.5 px-1">
+            <button id="btn-1" class="nokia-btn h-9" onclick="handleInput('1')">
+                <span class="text-xs">1</span>
+                <span class="text-[7px] text-slate-400 font-normal">. - _</span>
+            </button>
+            <button id="btn-2" class="nokia-btn h-9" onclick="handleInput('2')">
+                <span class="text-xs">2</span>
+                <span class="text-[7px] text-slate-400 font-normal">ABC</span>
+            </button>
+            <button id="btn-3" class="nokia-btn h-9" onclick="handleInput('3')">
+                <span class="text-xs">3</span>
+                <span class="text-[7px] text-slate-400 font-normal">DEF</span>
+            </button>
+
+            <button id="btn-4" class="nokia-btn h-9" onclick="handleInput('4')">
+                <span class="text-xs">4</span>
+                <span class="text-[7px] text-slate-400 font-normal">GHI</span>
+            </button>
+            <button id="btn-5" class="nokia-btn h-9" onclick="handleInput('5')">
+                <span class="text-xs">5</span>
+                <span class="text-[7px] text-slate-400 font-normal">JKL</span>
+            </button>
+            <button id="btn-6" class="nokia-btn h-9" onclick="handleInput('6')">
+                <span class="text-xs">6</span>
+                <span class="text-[7px] text-slate-400 font-normal">MNO</span>
+            </button>
+
+            <button id="btn-7" class="nokia-btn h-9" onclick="handleInput('7')">
+                <span class="text-xs">7</span>
+                <span class="text-[7px] text-slate-400 font-normal">PQRS</span>
+            </button>
+            <button id="btn-8" class="nokia-btn h-9" onclick="handleInput('8')">
+                <span class="text-xs">8</span>
+                <span class="text-[7px] text-slate-400 font-normal">TUV</span>
+            </button>
+            <button id="btn-9" class="nokia-btn h-9" onclick="handleInput('9')">
+                <span class="text-xs">9</span>
+                <span class="text-[7px] text-slate-400 font-normal">WXYZ</span>
+            </button>
+
+            <button id="btn-STAR" class="nokia-btn h-9" onclick="handleInput('*')">
+                <span class="text-xs">*</span>
+                <span class="text-[7px] text-slate-400 font-normal">p/+</span>
+            </button>
+            <button id="btn-0" class="nokia-btn h-9" onclick="handleInput('0')">
+                <span class="text-xs">0</span>
+                <span class="text-[7px] text-slate-400 font-normal">␣</span>
+            </button>
+            <button id="btn-HASH" class="nokia-btn h-9" onclick="handleInput('#')">
+                <span class="text-xs">#</span>
+                <span class="text-[7px] text-slate-400 font-normal"><i class="fa-solid fa-lock text-[6px]"></i></span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // System State
+        let currentState = 'HOME';
+        let selectedMenuIdx = 0;
+        let dialedNumber = '';
+        let calcVal = '0';
+
+        // Sound Synthesizer via Web Audio API
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(freq, type = 'sine', duration = 0.05) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log('Audio error:', e);
+            }
+        }
+
+        function playNokiaTune() {
+            const notes = [
+                { f: 1320, d: 0.12 }, { f: 1175, d: 0.12 }, { f: 740, d: 0.24 }, { f: 830, d: 0.24 },
+                { f: 1108, d: 0.12 }, { f: 987, d: 0.12 }, { f: 587, d: 0.24 }, { f: 659, d: 0.24 },
+                { f: 987, d: 0.12 }, { f: 880, d: 0.12 }, { f: 554, d: 0.24 }, { f: 659, d: 0.24 }, { f: 880, d: 0.4 }
+            ];
+            notes.forEach((n, idx) => {
+                setTimeout(() => playSound(n.f, 'triangle', n.d), idx * 130);
+            });
+        }
+
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const hrs = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('status-clock');
+            if (clockEl) clockEl.innerText = `${hrs}:${mins}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Main Menu List
+        const menuItems = [
+            { id: 'SNAKE', name: 'لعبة Snake III', icon: 'fa-solid fa-gamepad', color: 'bg-green-600' },
+            { id: 'BOUNCE', name: 'لعبة Bounce', icon: 'fa-solid fa-circle-dot', color: 'bg-red-600' },
+            { id: 'SPACE', name: 'Space Impact', icon: 'fa-solid fa-rocket', color: 'bg-indigo-600' },
+            { id: 'RACER', name: 'سباق Rally 3D', icon: 'fa-solid fa-car', color: 'bg-amber-600' },
+            { id: 'STORE', name: 'متجر Java Store', icon: 'fa-solid fa-store', color: 'bg-purple-600' },
+            { id: 'GALLERY', name: 'الاستوديو', icon: 'fa-solid fa-image', color: 'bg-pink-600' },
+            { id: 'CONTACTS', name: 'الأسماء', icon: 'fa-solid fa-address-book', color: 'bg-blue-600' },
+            { id: 'CALC', name: 'الحاسبة', icon: 'fa-solid fa-calculator', color: 'bg-teal-600' },
+            { id: 'RADIO', name: 'راديو FM', icon: 'fa-solid fa-radio', color: 'bg-orange-600' }
+        ];
+
+        // Active Game Interval Cleanups
+        let activeGameLoop = null;
+        function stopGameLoop() {
+            if (activeGameLoop) {
+                clearInterval(activeGameLoop);
+                activeGameLoop = null;
+            }
+        }
+
+        // SCREEN UI RENDERER
+        function renderScreen() {
+            const viewport = document.getElementById('app-viewport');
+            const leftSoft = document.getElementById('left-soft-label');
+            const centerSoft = document.getElementById('center-soft-label');
+            const rightSoft = document.getElementById('right-soft-label');
+
+            if (currentState === 'HOME') {
+                stopGameLoop();
+                leftSoft.innerText = 'القائمة';
+                centerSoft.innerText = 'خيارات';
+                rightSoft.innerText = 'الأسماء';
+
+                viewport.innerHTML = `
+                    <div class="h-full w-full bg-cover bg-center flex flex-col justify-between p-2 text-white relative"
+                         style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80')">
+                        <div class="text-center pt-2">
+                            <div class="text-2xl font-bold font-mono tracking-widest text-yellow-300 drop-shadow">${dialedNumber || ''}</div>
+                        </div>
+                        <div class="text-center pb-2">
+                            <div class="text-xs text-yellow-300 font-bold">STC 3G</div>
+                            <div class="text-[10px] text-slate-200 font-bold">نوكيا اكسبريس ميوزك</div>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (currentState === 'MENU') {
+                stopGameLoop();
+                leftSoft.innerText = 'اختيار';
+                centerSoft.innerText = 'فتح';
+                rightSoft.innerText = 'خروج';
+
+                let gridHTML = `<div class="p-1.5 grid grid-cols-3 gap-1.5 h-full bg-slate-900 overflow-y-auto">`;
+                menuItems.forEach((item, idx) => {
+                    const isSelected = idx === selectedMenuIdx;
+                    gridHTML += `
+                        <div class="flex flex-col items-center justify-center p-1 rounded-lg border ${isSelected ? 'border-yellow-400 bg-slate-800 scale-105 shadow-lg ring-1 ring-yellow-400' : 'border-slate-800 bg-slate-950'} transition-all">
+                            <div class="w-6 h-6 ${item.color} rounded-md flex items-center justify-center text-white text-xs mb-1">
+                                <i class="${item.icon}"></i>
+                            </div>
+                            <span class="text-[8px] text-center text-white font-bold leading-tight line-clamp-1">${item.name}</span>
+                        </div>
+                    `;
+                });
+                gridHTML += `</div>`;
+                viewport.innerHTML = gridHTML;
+            }
+            else if (currentState === 'GAME_SNAKE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'لعب';
+                rightSoft.innerText = 'خروج';
+                renderSnakeGame(viewport);
+            }
+            else if (currentState === 'GAME_BOUNCE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'قفز';
+                rightSoft.innerText = 'خروج';
+                renderBounceGame(viewport);
+            }
+            else if (currentState === 'GAME_SPACE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'إطلاق';
+                rightSoft.innerText = 'خروج';
+                renderSpaceGame(viewport);
+            }
+            else if (currentState === 'GAME_RACER') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'سرعة';
+                rightSoft.innerText = 'خروج';
+                renderRacerGame(viewport);
+            }
+            else if (currentState === 'APP_STORE') {
+                stopGameLoop();
+                leftSoft.innerText = 'تحميل';
+                centerSoft.innerText = 'مجاني';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 text-white h-full flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-yellow-400 mb-1 border-b border-slate-700 pb-1 flex justify-between">
+                                <span><i class="fa-solid fa-store ml-1"></i> متجر Java Store</span>
+                                <span class="text-[9px] text-green-400">مجاني 100%</span>
+                            </div>
+                            <div class="text-[10px] text-slate-300 space-y-1.5 mt-2">
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Bounce Tales</span>
+                                    <span class="text-green-400 font-bold text-[9px]">مفتوح</span>
+                                </div>
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Diamond Rush</span>
+                                    <span class="text-green-400 font-bold text-[9px]">متاح</span>
+                                </div>
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Rally 3D</span>
+                                    <span class="text-green-400 font-bold text-[9px]">مثبت</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-center text-slate-400">جميع الألعاب مفعلة بدون أي رسوم</div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_GALLERY') {
+                stopGameLoop();
+                leftSoft.innerText = 'عرض';
+                centerSoft.innerText = '';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 h-full text-white">
+                        <div class="text-xs font-bold text-purple-400 mb-2 border-b border-slate-800 pb-1">معرض الصور</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80" class="rounded border border-purple-500 h-16 w-full object-cover">
+                            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=150&q=80" class="rounded border border-slate-700 h-16 w-full object-cover">
+                        </div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_CONTACTS') {
+                stopGameLoop();
+                leftSoft.innerText = 'اتصال';
+                centerSoft.innerText = 'خيارات';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 text-white h-full text-xs space-y-1.5">
+                        <div class="font-bold text-blue-400 border-b border-slate-700 pb-1">سجل الأسماء</div>
+                        <div class="bg-slate-800 p-1.5 rounded flex justify-between"><span> أمي</span><span class="text-[9px] text-slate-400">050000001</span></div>
+                        <div class="bg-slate-800 p-1.5 rounded flex justify-between"><span> أبي</span><span class="text-[9px] text-slate-400">050000002</span></div>
+                        <div class="bg-slate-800 p-1.5 rounded flex justify-between"><span> صديقي</span><span class="text-[9px] text-slate-400">050000003</span></div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_CALC') {
+                stopGameLoop();
+                leftSoft.innerText = 'احسب';
+                centerSoft.innerText = '=';
+                rightSoft.innerText = 'مسح';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 text-white h-full flex flex-col justify-between">
+                        <div class="text-xs font-bold text-teal-400 border-b border-slate-700 pb-1">الحاسبة</div>
+                        <div class="bg-black p-2 rounded border border-slate-700 text-right text-xl font-mono text-green-400 break-all h-14 flex items-center justify-end">
+                            ${calcVal}
+                        </div>
+                        <div class="text-[9px] text-slate-400 text-center">استخدم الأرقام و (*) للجمع و (#) للطرح</div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_RADIO') {
+                stopGameLoop();
+                leftSoft.innerText = 'تشغيل';
+                centerSoft.innerText = 'بحث';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-4 bg-gradient-to-b from-orange-950 to-slate-900 text-white h-full flex flex-col items-center justify-center text-center">
+                        <i class="fa-solid fa-radio text-4xl text-orange-400 mb-2 animate-pulse"></i>
+                        <div class="text-2xl font-bold font-mono text-yellow-300">100.5 MHz</div>
+                        <div class="text-xs text-slate-300 mt-1">إذاعة إف إم الكلاسيكية</div>
+                    </div>
+                `;
+            }
+        }
+
+        // ---------------- SNAKE III GAME ----------------
+        let snake = [];
+        let snakeFood = {x: 0, y: 0};
+        let snakeDir = 'RIGHT';
+        let snakeScore = 0;
+
+        function renderSnakeGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-slate-950 w-full h-full flex flex-col items-center justify-between p-1">
+                    <div class="text-[10px] text-green-400 w-full flex justify-between font-mono px-1">
+                        <span>Snake III</span>
+                        <span>النقاط: <span id="snake-score">0</span></span>
+                    </div>
+                    <canvas id="snakeCanvas" width="200" height="180" class="bg-black border border-green-800 rounded mx-auto"></canvas>
+                </div>
+            `;
+            initSnakeGame();
+        }
+
+        function initSnakeGame() {
+            stopGameLoop();
+            snake = [{x: 5, y: 5}, {x: 4, y: 5}, {x: 3, y: 5}];
+            snakeFood = {x: 12, y: 8};
+            snakeDir = 'RIGHT';
+            snakeScore = 0;
+
+            activeGameLoop = setInterval(updateSnake, 130);
+        }
+
+        function updateSnake() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const gridSize = 10;
+            const tileCountX = 20;
+            const tileCountY = 18;
+
+            let head = { ...snake[0] };
+
+            // STRICT DIRECT DIRECTIONS
+            if (snakeDir === 'UP') head.y--;
+            if (snakeDir === 'DOWN') head.y++;
+            if (snakeDir === 'LEFT') head.x--;
+            if (snakeDir === 'RIGHT') head.x++;
+
+            // Wall Collisions
+            if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
+                playSound(200, 'sawtooth', 0.2);
+                initSnakeGame();
+                return;
+            }
+
+            // Self Collision
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    playSound(200, 'sawtooth', 0.2);
+                    initSnakeGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            // Food Collisions
+            if (head.x === snakeFood.x && head.y === snakeFood.y) {
+                snakeScore += 10;
+                const scoreEl = document.getElementById('snake-score');
+                if (scoreEl) scoreEl.innerText = snakeScore;
+                playSound(1000, 'sine', 0.08);
+                snakeFood = {
+                    x: Math.floor(Math.random() * tileCountX),
+                    y: Math.floor(Math.random() * tileCountY)
+                };
+            } else {
+                snake.pop();
+            }
+
+            // Clear Screen
+            ctx.fillStyle = '#031206';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Snake
+            snake.forEach((part, idx) => {
+                ctx.fillStyle = idx === 0 ? '#4ade80' : '#16a34a';
+                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 1, gridSize - 1);
+            });
+
+            // Draw Food
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(snakeFood.x * gridSize, snakeFood.y * gridSize, gridSize - 1, gridSize - 1);
+        }
+
+        // ---------------- BOUNCE GAME ----------------
+        let bounceX = 30, bounceY = 120, bounceVY = 0, bounceVX = 0;
+        let bounceScore = 0;
+
+        function renderBounceGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-slate-950 w-full h-full flex flex-col justify-between p-1">
+                    <div class="text-[10px] text-red-400 w-full flex justify-between font-mono px-1">
+                        <span>Bounce</span>
+                        <span>النقاط: <span id="bounce-score">0</span></span>
+                    </div>
+                    <canvas id="bounceCanvas" width="200" height="180" class="bg-sky-950 border border-slate-700 rounded mx-auto"></canvas>
+                </div>
+            `;
+            initBounceGame();
+        }
+
+        function initBounceGame() {
+            stopGameLoop();
+            bounceX = 30; bounceY = 120; bounceVY = 0; bounceVX = 0; bounceScore = 0;
+            activeGameLoop = setInterval(updateBounce, 30);
+        }
+
+        function updateBounce() {
+            const canvas = document.getElementById('bounceCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            bounceVY += 0.45; // Gravity
+            bounceY += bounceVY;
+            bounceX += bounceVX;
+
+            // Floor Collision
+            if (bounceY >= 155) {
+                bounceY = 155;
+                bounceVY = -6; // Bounce floor
+                playSound(350, 'sine', 0.04);
+            }
+
+            // Wall Boundaries: STRICT LEFT AND RIGHT
+            if (bounceX < 12) bounceX = 12;
+            if (bounceX > 188) bounceX = 188;
+
+            // Render background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ground
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 165, canvas.width, 15);
+
+            // Spikes (Obstacle)
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(100, 165); ctx.lineTo(110, 145); ctx.lineTo(120, 165);
+            ctx.fill();
+
+            // Ring (Goal)
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(150, 110, 12, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Collision with spike
+            if (bounceX > 92 && bounceX < 128 && bounceY > 135) {
+                playSound(150, 'sawtooth', 0.2);
+                initBounceGame();
+            }
+
+            // Ring Collect
+            if (Math.abs(bounceX - 150) < 15 && Math.abs(bounceY - 110) < 15) {
+                bounceScore += 50;
+                const scoreEl = document.getElementById('bounce-score');
+                if (scoreEl) scoreEl.innerText = bounceScore;
+                playSound(880, 'sine', 0.1);
+            }
+
+            // Ball
+            ctx.fillStyle = '#f87171';
+            ctx.beginPath();
+            ctx.arc(bounceX, bounceY, 9, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#7f1d1d';
+            ctx.stroke();
+        }
+
+        // ---------------- SPACE IMPACT GAME ----------------
+        let spaceY = 90;
+        let spaceBullets = [];
+        let spaceEnemies = [];
+        let spaceScore = 0;
+
+        function renderSpaceGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-slate-950 w-full h-full flex flex-col justify-between p-1">
+                    <div class="text-[10px] text-yellow-400 w-full flex justify-between font-mono px-1">
+                        <span>Space Impact</span>
+                        <span>النقاط: <span id="space-score">0</span></span>
+                    </div>
+                    <canvas id="spaceCanvas" width="200" height="180" class="bg-black border border-indigo-900 rounded mx-auto"></canvas>
+                </div>
+            `;
+            initSpaceGame();
+        }
+
+        function initSpaceGame() {
+            stopGameLoop();
+            spaceY = 90; spaceBullets = []; spaceEnemies = []; spaceScore = 0;
+            activeGameLoop = setInterval(updateSpace, 35);
+        }
+
+        function updateSpace() {
+            const canvas = document.getElementById('spaceCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (Math.random() < 0.07) {
+                spaceEnemies.push({ x: 200, y: Math.random() * 160 + 10, alive: true });
+            }
+
+            spaceBullets.forEach(b => b.x += 6);
+            spaceBullets = spaceBullets.filter(b => b.x < 200);
+
+            spaceEnemies.forEach(e => {
+                e.x -= 2.5;
+                spaceBullets.forEach(b => {
+                    if (Math.abs(b.x - e.x) < 10 && Math.abs(b.y - e.y) < 10) {
+                        e.alive = false;
+                        spaceScore += 20;
+                        const scoreEl = document.getElementById('space-score');
+                        if (scoreEl) scoreEl.innerText = spaceScore;
+                        playSound(800, 'square', 0.05);
+                    }
+                });
+            });
+            spaceEnemies = spaceEnemies.filter(e => e.x > 0 && e.alive);
+
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ship
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.moveTo(10, spaceY - 7);
+            ctx.lineTo(25, spaceY);
+            ctx.lineTo(10, spaceY + 7);
+            ctx.fill();
+
+            // Bullets
+            ctx.fillStyle = '#facc15';
+            spaceBullets.forEach(b => ctx.fillRect(b.x, b.y - 1, 5, 2));
+
+            // Enemies
+            ctx.fillStyle = '#ef4444';
+            spaceEnemies.forEach(e => ctx.fillRect(e.x, e.y - 5, 10, 10));
+        }
+
+        // ---------------- RALLY 3D RACING GAME ----------------
+        let playerLane = 1; // 0: Left, 1: Middle, 2: Right
+        let roadCars = [];
+        let raceScore = 0;
+
+        function renderRacerGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-slate-950 w-full h-full flex flex-col justify-between p-1">
+                    <div class="text-[10px] text-amber-400 w-full flex justify-between font-mono px-1">
+                        <span>Rally 3D</span>
+                        <span>المسافة: <span id="racer-score">0</span>m</span>
+                    </div>
+                    <canvas id="racerCanvas" width="200" height="180" class="bg-slate-900 border border-slate-700 rounded mx-auto"></canvas>
+                </div>
+            `;
+            initRacerGame();
+        }
+
+        function initRacerGame() {
+            stopGameLoop();
+            playerLane = 1; roadCars = []; raceScore = 0;
+            activeGameLoop = setInterval(updateRacer, 45);
+        }
+
+        function updateRacer() {
+            const canvas = document.getElementById('racerCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            raceScore += 2;
+            const scoreEl = document.getElementById('racer-score');
+            if (scoreEl) scoreEl.innerText = raceScore;
+
+            if (Math.random() < 0.05) {
+                roadCars.push({ lane: Math.floor(Math.random() * 3), y: -30 });
+            }
+
+            roadCars.forEach(car => car.y += 4.5);
+
+            // Collision check
+            roadCars.forEach(car => {
+                if (car.lane === playerLane && car.y > 120 && car.y < 170) {
+                    playSound(160, 'sawtooth', 0.25);
+                    initRacerGame();
+                }
+            });
+
+            roadCars = roadCars.filter(car => car.y < 200);
+
+            // Draw Road
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Lanes
+            ctx.strokeStyle = '#ffffff';
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.moveTo(66, 0); ctx.lineTo(66, canvas.height);
+            ctx.moveTo(133, 0); ctx.lineTo(133, canvas.height);
+            ctx.stroke();
+
+            // Player Car
+            const laneX = [20, 87, 154];
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(laneX[playerLane], 135, 26, 38);
+
+            // Enemy Cars
+            ctx.fillStyle = '#dc2626';
+            roadCars.forEach(car => {
+                ctx.fillRect(laneX[car.lane], car.y, 26, 38);
+            });
+        }
+
+        // ---------------- KEY INPUT ROUTER ----------------
+        function handleInput(key) {
+            playSound(650, 'sine', 0.03);
+
+            // Visual Key Highlight Effect
+            const btnEl = document.getElementById(`btn-${key}`);
+            if (btnEl) {
+                btnEl.classList.add('btn-pressed');
+                setTimeout(() => btnEl.classList.remove('btn-pressed'), 120);
+            }
+
+            // Global Exit / End Button
+            if (key === 'END') {
+                if (dialedNumber) {
+                    dialedNumber = '';
+                } else {
+                    currentState = 'HOME';
+                    playNokiaTune();
+                }
+                renderScreen();
+                return;
+            }
+
+            // HOME SCREEN CONTROLS
+            if (currentState === 'HOME') {
+                if ('0123456789*#'.includes(key)) {
+                    dialedNumber += key;
+                    renderScreen();
+                    return;
+                }
+                if (key === 'CALL') {
+                    if (dialedNumber) {
+                        dialedNumber = '';
+                    } else {
+                        playNokiaTune();
+                    }
+                    renderScreen();
+                    return;
+                }
+                if (key === 'LSK') {
+                    currentState = 'MENU';
+                    selectedMenuIdx = 0;
+                    renderScreen();
+                    return;
+                }
+                if (key === 'RSK') {
+                    currentState = 'APP_CONTACTS';
+                    renderScreen();
+                    return;
+                }
+            }
+
+            // MAIN MENU CONTROLS
+            if (currentState === 'MENU') {
+                if (key === 'RIGHT' || key === '6') selectedMenuIdx = (selectedMenuIdx + 1) % menuItems.length;
+                if (key === 'LEFT' || key === '4') selectedMenuIdx = (selectedMenuIdx - 1 + menuItems.length) % menuItems.length;
+                if (key === 'DOWN' || key === '8') selectedMenuIdx = Math.min(menuItems.length - 1, selectedMenuIdx + 3);
+                if (key === 'UP' || key === '2') selectedMenuIdx = Math.max(0, selectedMenuIdx - 3);
+
+                if (key === 'OK' || key === 'LSK' || key === '5') {
+                    const selected = menuItems[selectedMenuIdx].id;
+                    if (selected === 'SNAKE') currentState = 'GAME_SNAKE';
+                    else if (selected === 'BOUNCE') currentState = 'GAME_BOUNCE';
+                    else if (selected === 'SPACE') currentState = 'GAME_SPACE';
+                    else if (selected === 'RACER') currentState = 'GAME_RACER';
+                    else if (selected === 'STORE') currentState = 'APP_STORE';
+                    else if (selected === 'GALLERY') currentState = 'APP_GALLERY';
+                    else if (selected === 'CONTACTS') currentState = 'APP_CONTACTS';
+                    else if (selected === 'CALC') currentState = 'APP_CALC';
+                    else if (selected === 'RADIO') currentState = 'APP_RADIO';
+                }
+                if (key === 'RSK') currentState = 'HOME';
+                renderScreen();
+                return;
+            }
+
+            // SNAKE CONTROLS (STRICT CORRECT DIRECTIONS)
+            if (currentState === 'GAME_SNAKE') {
+                if ((key === 'UP' || key === '2') && snakeDir !== 'DOWN') snakeDir = 'UP';
+                if ((key === 'DOWN' || key === '8') && snakeDir !== 'UP') snakeDir = 'DOWN';
+                if ((key === 'LEFT' || key === '4') && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
+                if ((key === 'RIGHT' || key === '6') && snakeDir !== 'LEFT') snakeDir = 'RIGHT';
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initSnakeGame();
+            }
+
+            // BOUNCE CONTROLS (STRICT CORRECT DIRECTIONS)
+            if (currentState === 'GAME_BOUNCE') {
+                if (key === 'LEFT' || key === '4') bounceVX = -3.5;  // STRICT LEFT
+                if (key === 'RIGHT' || key === '6') bounceVX = 3.5;  // STRICT RIGHT
+                if (key === 'UP' || key === 'OK' || key === '2' || key === '5') bounceVY = -7; // JUMP
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initBounceGame();
+            }
+
+            // SPACE IMPACT CONTROLS
+            if (currentState === 'GAME_SPACE') {
+                if (key === 'UP' || key === '2') spaceY = Math.max(15, spaceY - 14);
+                if (key === 'DOWN' || key === '8') spaceY = Math.min(165, spaceY + 14);
+                if (key === 'OK' || key === '5' || key === 'LSK' || key === 'RIGHT' || key === '6') {
+                    spaceBullets.push({ x: 25, y: spaceY });
+                    playSound(950, 'square', 0.03);
+                }
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initSpaceGame();
+            }
+
+            // RALLY 3D CONTROLS
+            if (currentState === 'GAME_RACER') {
+                if ((key === 'LEFT' || key === '4') && playerLane > 0) playerLane--;
+                if ((key === 'RIGHT' || key === '6') && playerLane < 2) playerLane++;
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initRacerGame();
+            }
+
+            // CALCULATOR LOGIC
+            if (currentState === 'APP_CALC') {
+                if ('0123456789'.includes(key)) {
+                    calcVal = calcVal === '0' ? key : calcVal + key;
+                } else if (key === '*') {
+                    calcVal += '+';
+                } else if (key === '#') {
+                    calcVal += '-';
+                } else if (key === 'OK') {
+                    try { calcVal = String(eval(calcVal)); } catch (e) { calcVal = 'خطأ'; }
+                } else if (key === 'RSK') {
+                    calcVal = '0';
+                }
+                renderScreen();
+            }
+
+            // SECONDARY APPS BACK BUTTON
+            if (['APP_STORE', 'APP_GALLERY', 'APP_CONTACTS', 'APP_RADIO'].includes(currentState)) {
+                if (key === 'RSK') {
+                    currentState = 'MENU';
+                    renderScreen();
+                }
+            }
+        }
+
+        // PHYSICAL KEYBOARD LISTENER
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') { e.preventDefault(); handleInput('UP'); }
+            if (e.key === 'ArrowDown') { e.preventDefault(); handleInput('DOWN'); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); handleInput('LEFT'); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); handleInput('RIGHT'); }
+            if (e.key === 'Enter') { e.preventDefault(); handleInput('OK'); }
+            if (e.key === 'Backspace' || e.key === 'Escape') { e.preventDefault(); handleInput('RSK'); }
+            if ('0123456789*#'.includes(e.key)) { handleInput(e.key); }
+        });
+
+        // Initialize on load
+        window.onload = () => {
+            renderScreen();
+        };
+    </script>
+</body>
+</html>
