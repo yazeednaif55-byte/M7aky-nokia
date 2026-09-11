@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nokia Classic Phone Emulator - محاكي نوكيا الكلاسيكي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Tajawal:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Nokia Phone Shell Styling */
+        .nokia-body {
+            background: linear-gradient(180deg, #1e1e24 0%, #0a0a0c 100%);
+            border: 4px solid #3b82f6;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 
+                        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+                        0 0 30px rgba(59, 130, 246, 0.3);
+            border-radius: 40px;
+            width: 340px;
+            padding: 20px 18px 25px 18px;
+            position: relative;
+        }
+
+        /* XpressMusic Side Red Accent */
+        .nokia-body::before, .nokia-body::after {
+            content: '';
+            position: absolute;
+            top: 60px;
+            bottom: 100px;
+            width: 5px;
+            background: #ef4444;
+            border-radius: 3px;
+        }
+        .nokia-body::before { left: -3px; }
+        .nokia-body::after { right: -3px; }
+
+        /* Nostalgic Screen Styling */
+        .nokia-screen-bezel {
+            background: #000;
+            border: 3px solid #334155;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .nokia-screen {
+            background-color: #0b1329;
+            width: 100%;
+            height: 280px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Tajawal', sans-serif;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+            image-rendering: pixelated;
+        }
+
+        /* Pixel/LCD Lines Grid Overlay */
+        .lcd-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* Keyboard Buttons Styling */
+        .nokia-btn {
+            background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+            color: #f8fafc;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 0 #0f172a, inset 0 1px 0 rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.05s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .nokia-btn:active, .nokia-btn.active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0f172a, inset 0 1px 0 rgba(255,255,255,0.1);
+            background: #2563eb;
+        }
+
+        .dpad-btn {
+            background: linear-gradient(180deg, #475569 0%, #334155 100%);
+            border-color: #64748b;
+        }
+
+        /* Custom Retro Font Class */
+        .font-retro {
+            font-family: 'VT323', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="nokia-body">
+        
+        <!-- Speaker Grill & Logo -->
+        <div class="flex flex-col items-center mb-2">
+            <div class="w-12 h-1.5 bg-slate-700 rounded-full mb-1"></div>
+            <div class="text-xs tracking-widest text-slate-400 font-bold uppercase" style="font-family: sans-serif;">NOKIA</div>
+        </div>
+
+        <!-- Phone Display Screen Frame -->
+        <div class="nokia-screen-bezel mb-4">
+            <div id="screen" class="nokia-screen">
+                <div class="lcd-overlay"></div>
+
+                <!-- Status Bar Top -->
+                <div class="h-6 bg-blue-900/80 text-white text-[11px] px-2 flex justify-between items-center z-10 relative border-b border-blue-700/50">
+                    <div class="flex items-center space-x-1 space-x-reverse">
+                        <i class="fa-solid fa-signal text-[9px] text-green-400"></i>
+                        <span class="text-[9px] font-mono">NOKIA</span>
+                    </div>
+                    <div id="status-clock" class="font-mono font-bold text-yellow-300">12:00</div>
+                    <div class="flex items-center space-x-1 space-x-reverse">
+                        <i class="fa-solid fa-battery-three-quarters text-green-400 text-[10px]"></i>
+                    </div>
+                </div>
+
+                <!-- Dynamic View Area -->
+                <div id="app-viewport" class="h-[226px] w-full relative">
+                    <!-- Screen Contents rendered dynamically via JavaScript -->
+                </div>
+
+                <!-- Bottom Softkeys Labels -->
+                <div class="h-5 bg-slate-900 text-white text-[10px] px-3 flex justify-between items-center z-10 relative border-t border-slate-800">
+                    <span id="left-soft-label" class="text-blue-300 font-bold">القائمة</span>
+                    <span id="center-soft-label" class="text-yellow-400 text-[9px]">اختيار</span>
+                    <span id="right-soft-label" class="text-red-300 font-bold">الأسماء</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soft Keys & D-Pad Section -->
+        <div class="grid grid-cols-3 gap-2 mb-3 px-1">
+            <button class="nokia-btn h-8 text-xs font-bold text-blue-300" onclick="pressKey('LSK')">____</button>
+            <button class="nokia-btn dpad-btn h-8 text-xs font-bold text-yellow-400" onclick="pressKey('UP')"><i class="fa-solid fa-caret-up"></i></button>
+            <button class="nokia-btn h-8 text-xs font-bold text-red-300" onclick="pressKey('RSK')">____</button>
+
+            <button class="nokia-btn dpad-btn h-8 text-xs font-bold text-yellow-400" onclick="pressKey('LEFT')"><i class="fa-solid fa-caret-left"></i></button>
+            <button class="nokia-btn dpad-btn h-8 text-xs font-bold bg-blue-600 text-white" onclick="pressKey('OK')">OK</button>
+            <button class="nokia-btn dpad-btn h-8 text-xs font-bold text-yellow-400" onclick="pressKey('RIGHT')"><i class="fa-solid fa-caret-right"></i></button>
+
+            <button class="nokia-btn h-9 bg-green-900/60 text-green-400 border-green-700" onclick="pressKey('CALL')">
+                <i class="fa-solid fa-phone text-xs"></i>
+            </button>
+            <button class="nokia-btn dpad-btn h-8 text-xs font-bold text-yellow-400" onclick="pressKey('DOWN')"><i class="fa-solid fa-caret-down"></i></button>
+            <button class="nokia-btn h-9 bg-red-900/60 text-red-400 border-red-700" onclick="pressKey('END')">
+                <i class="fa-solid fa-phone-slash text-xs"></i>
+            </button>
+        </div>
+
+        <!-- 3x4 Keypad -->
+        <div class="grid grid-cols-3 gap-1.5 px-1">
+            <button class="nokia-btn h-10" onclick="pressKey('1')">
+                <span class="text-sm">1</span>
+                <span class="text-[8px] text-slate-400 font-normal">. - _</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('2')">
+                <span class="text-sm">2</span>
+                <span class="text-[8px] text-slate-400 font-normal">ABC</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('3')">
+                <span class="text-sm">3</span>
+                <span class="text-[8px] text-slate-400 font-normal">DEF</span>
+            </button>
+
+            <button class="nokia-btn h-10" onclick="pressKey('4')">
+                <span class="text-sm">4</span>
+                <span class="text-[8px] text-slate-400 font-normal">GHI</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('5')">
+                <span class="text-sm">5</span>
+                <span class="text-[8px] text-slate-400 font-normal">JKL</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('6')">
+                <span class="text-sm">6</span>
+                <span class="text-[8px] text-slate-400 font-normal">MNO</span>
+            </button>
+
+            <button class="nokia-btn h-10" onclick="pressKey('7')">
+                <span class="text-sm">7</span>
+                <span class="text-[8px] text-slate-400 font-normal">PQRS</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('8')">
+                <span class="text-sm">8</span>
+                <span class="text-[8px] text-slate-400 font-normal">TUV</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('9')">
+                <span class="text-sm">9</span>
+                <span class="text-[8px] text-slate-400 font-normal">WXYZ</span>
+            </button>
+
+            <button class="nokia-btn h-10" onclick="pressKey('*')">
+                <span class="text-sm">*</span>
+                <span class="text-[8px] text-slate-400 font-normal">p/+</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('0')">
+                <span class="text-sm">0</span>
+                <span class="text-[8px] text-slate-400 font-normal">␣</span>
+            </button>
+            <button class="nokia-btn h-10" onclick="pressKey('#')">
+                <span class="text-sm">#</span>
+                <span class="text-[8px] text-slate-400 font-normal"><i class="fa-solid fa-lock text-[7px]"></i></span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Web Audio API Sound Synthesizer for Retro Beeps and Ringtones
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+        }
+
+        function playBeep(freq = 800, type = 'sine', duration = 0.05) {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playNokiaTune() {
+            initAudio();
+            const notes = [
+                {f: 1318.51, d: 0.15}, {f: 1174.66, d: 0.15}, {f: 739.99, d: 0.3}, {f: 830.61, d: 0.3},
+                {f: 1108.73, d: 0.15}, {f: 987.77, d: 0.15}, {f: 587.33, d: 0.3}, {f: 659.25, d: 0.3},
+                {f: 987.77, d: 0.15}, {f: 880, d: 0.15}, {f: 493.88, d: 0.3}, {f: 554.37, d: 0.3}, {f: 880, d: 0.5}
+            ];
+            let time = audioCtx.currentTime;
+            notes.forEach(note => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(note.f, time);
+                gain.gain.setValueAtTime(0.08, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + note.d);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(time);
+                osc.stop(time + note.d);
+                time += note.d + 0.03;
+            });
+        }
+
+        let currentState = 'HOME'; // HOME, MENU, GAME_SNAKE, GAME_BOUNCE, GAME_SPACE, APP_GALLERY, APP_CONTACTS, APP_CALC, APP_STORE, APP_RADIO
+        let selectedMenuIdx = 0;
+        let dialedNumber = '';
+
+        const menuItems = [
+            { id: 'SNAKE', name: 'لعبة Snake III', icon: 'fa-solid fa-gamepad', color: 'bg-green-600' },
+            { id: 'BOUNCE', name: 'لعبة Bounce', icon: 'fa-solid fa-circle-dot', color: 'bg-red-600' },
+            { id: 'SPACE', name: 'Space Impact', icon: 'fa-solid fa-rocket', color: 'bg-indigo-600' },
+            { id: 'STORE', name: 'متجر Java Store', icon: 'fa-solid fa-store', color: 'bg-yellow-600' },
+            { id: 'GALLERY', name: 'الاستوديو', icon: 'fa-solid fa-image', color: 'bg-purple-600' },
+            { id: 'CONTACTS', name: 'الأسماء', icon: 'fa-solid fa-address-book', color: 'bg-blue-600' },
+            { id: 'CALC', name: 'الحاسبة', icon: 'fa-solid fa-calculator', color: 'bg-teal-600' },
+            { id: 'RADIO', name: 'راديو FM', icon: 'fa-solid fa-radio', color: 'bg-orange-600' }
+        ];
+
+        // Update Live Clock
+        setInterval(() => {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('status-clock');
+            if (clockEl) clockEl.innerText = `${hours}:${mins}`;
+        }, 1000);
+
+        // Core Render Dispatcher
+        function renderScreen() {
+            const viewport = document.getElementById('app-viewport');
+            const leftSoft = document.getElementById('left-soft-label');
+            const centerSoft = document.getElementById('center-soft-label');
+            const rightSoft = document.getElementById('right-soft-label');
+
+            if (currentState === 'HOME') {
+                leftSoft.innerText = 'القائمة';
+                centerSoft.innerText = 'خيارات';
+                rightSoft.innerText = 'الأسماء';
+
+                viewport.innerHTML = `
+                    <div class="h-full w-full bg-cover bg-center flex flex-col justify-between p-2 text-white relative"
+                         style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80')">
+                        <div class="text-center pt-2">
+                            <div class="text-3xl font-bold font-mono tracking-wider drop-shadow-md">${dialedNumber || ''}</div>
+                        </div>
+                        <div class="text-center pb-2">
+                            <div class="text-xs text-yellow-300 font-bold drop-shadow">STC 3G</div>
+                            <div class="text-[10px] text-slate-200">نوكيا اكسبريس ميوزك</div>
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (currentState === 'MENU') {
+                leftSoft.innerText = 'اختيار';
+                centerSoft.innerText = 'فتح';
+                rightSoft.innerText = 'خروج';
+
+                let gridHTML = `<div class="p-2 grid grid-cols-3 gap-2 h-full bg-slate-900 overflow-y-auto">`;
+                menuItems.forEach((item, idx) => {
+                    const isSelected = idx === selectedMenuIdx;
+                    gridHTML += `
+                        <div class="flex flex-col items-center justify-center p-2 rounded-lg border ${isSelected ? 'border-yellow-400 bg-slate-800 scale-105 shadow-md' : 'border-slate-800 bg-slate-950'} transition-all">
+                            <div class="w-8 h-8 ${item.color} rounded-lg flex items-center justify-center text-white text-sm mb-1">
+                                <i class="${item.icon}"></i>
+                            </div>
+                            <span class="text-[9px] text-center text-white font-bold leading-tight line-clamp-1">${item.name}</span>
+                        </div>
+                    `;
+                });
+                gridHTML += `</div>`;
+                viewport.innerHTML = gridHTML;
+            }
+            else if (currentState === 'GAME_SNAKE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'لعب';
+                rightSoft.innerText = 'خروج';
+                renderSnakeGame(viewport);
+            }
+            else if (currentState === 'GAME_BOUNCE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'قفز';
+                rightSoft.innerText = 'خروج';
+                renderBounceGame(viewport);
+            }
+            else if (currentState === 'GAME_SPACE') {
+                leftSoft.innerText = 'إعادة';
+                centerSoft.innerText = 'إطلاق';
+                rightSoft.innerText = 'خروج';
+                renderSpaceGame(viewport);
+            }
+            else if (currentState === 'APP_STORE') {
+                leftSoft.innerText = 'تحميل';
+                centerSoft.innerText = 'مجاني';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 text-white h-full flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-yellow-400 mb-1 border-b border-slate-700 pb-1">
+                                <i class="fa-solid fa-store ml-1"></i> متجر ألعاب Java (مجاني)
+                            </div>
+                            <div class="text-[10px] text-slate-300 space-y-1 mt-2">
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Bounce Extra</span>
+                                    <span class="text-green-400 font-bold">مفتوح</span>
+                                </div>
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Diamond Rush</span>
+                                    <span class="text-green-400 font-bold">مجاني</span>
+                                </div>
+                                <div class="bg-slate-800 p-1.5 rounded border border-green-500/50 flex justify-between items-center">
+                                    <span> Rally 3D</span>
+                                    <span class="text-green-400 font-bold">مجاني</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[9px] text-center text-slate-400">جميع الألعاب المدفوعة كلاسيكياً متاحة مجاناً 100%</div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_GALLERY') {
+                leftSoft.innerText = 'عرض';
+                centerSoft.innerText = '';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 h-full text-white">
+                        <div class="text-xs font-bold text-purple-400 mb-2">معرض الصور</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=150&q=80" class="rounded border border-purple-500 h-16 w-full object-cover">
+                            <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=150&q=80" class="rounded border border-slate-700 h-16 w-full object-cover">
+                        </div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_CONTACTS') {
+                leftSoft.innerText = 'اتصال';
+                centerSoft.innerText = 'خيارات';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-2 bg-slate-900 text-white h-full text-xs space-y-1">
+                        <div class="font-bold text-blue-400 border-b border-slate-700 pb-1">سجل الأسماء</div>
+                        <div class="bg-slate-800 p-1.5 rounded"> أمي (+9665000000)</div>
+                        <div class="bg-slate-800 p-1.5 rounded"> أبي (+9665111111)</div>
+                        <div class="bg-slate-800 p-1.5 rounded"> صديقي (+9665222222)</div>
+                    </div>
+                `;
+            }
+            else if (currentState === 'APP_CALC') {
+                leftSoft.innerText = 'احسب';
+                centerSoft.innerText = '=';
+                rightSoft.innerText = 'مسح';
+                renderCalculator(viewport);
+            }
+            else if (currentState === 'APP_RADIO') {
+                leftSoft.innerText = 'تشغيل';
+                centerSoft.innerText = 'بحث';
+                rightSoft.innerText = 'رجوع';
+                viewport.innerHTML = `
+                    <div class="p-4 bg-gradient-to-b from-orange-950 to-slate-900 text-white h-full flex flex-col items-center justify-center text-center">
+                        <i class="fa-solid fa-radio text-4xl text-orange-400 mb-2 animate-pulse"></i>
+                        <div class="text-xl font-bold font-mono text-yellow-300">100.5 MHz</div>
+                        <div class="text-xs text-slate-300 mt-1">إذاعة إف إم الكلاسيكية</div>
+                    </div>
+                `;
+            }
+        }
+
+        // --- SNAKE GAME LOGIC ---
+        let snake = [{x: 5, y: 5}];
+        let food = {x: 8, y: 8};
+        let snakeDir = 'RIGHT';
+        let snakeInterval = null;
+        let snakeScore = 0;
+
+        function renderSnakeGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-slate-950 w-full h-full flex flex-col items-center justify-between p-1">
+                    <div class="text-[10px] text-green-400 w-full flex justify-between font-mono px-1">
+                        <span>Snake III</span>
+                        <span>النقاط: <span id="snake-score">0</span></span>
+                    </div>
+                    <canvas id="snakeCanvas" width="180" height="180" class="bg-black border border-green-800 rounded"></canvas>
+                </div>
+            `;
+            initSnakeGame();
+        }
+
+        function initSnakeGame() {
+            snake = [{x: 5, y: 5}, {x: 4, y: 5}];
+            food = {x: 10, y: 10};
+            snakeDir = 'RIGHT';
+            snakeScore = 0;
+            if (snakeInterval) clearInterval(snakeInterval);
+            
+            snakeInterval = setInterval(updateSnake, 180);
+        }
+
+        function updateSnake() {
+            const canvas = document.getElementById('snakeCanvas');
+            if (!canvas) { clearInterval(snakeInterval); return; }
+            const ctx = canvas.getContext('2d');
+            const gridSize = 10;
+            const tileCount = 18;
+
+            let head = {...snake[0]};
+            if (snakeDir === 'UP') head.y--;
+            if (snakeDir === 'DOWN') head.y++;
+            if (snakeDir === 'LEFT') head.x--;
+            if (snakeDir === 'RIGHT') head.x++;
+
+            // Wall collisions
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                playBeep(200, 'sawtooth', 0.2);
+                initSnakeGame();
+                return;
+            }
+
+            snake.unshift(head);
+
+            if (head.x === food.x && head.y === food.y) {
+                snakeScore += 10;
+                document.getElementById('snake-score').innerText = snakeScore;
+                playBeep(1200, 'sine', 0.08);
+                food = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
+            } else {
+                snake.pop();
+            }
+
+            // Draw Canvas
+            ctx.fillStyle = '#051306';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Snake
+            ctx.fillStyle = '#22c55e';
+            snake.forEach((part, idx) => {
+                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 1, gridSize - 1);
+            });
+
+            // Draw Food
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 1, gridSize - 1);
+        }
+
+        // --- BOUNCE GAME LOGIC ---
+        let bounceX = 20, bounceY = 140, bounceVY = 0, bounceVX = 0;
+        let bounceInterval = null;
+
+        function renderBounceGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-sky-900 w-full h-full">
+                    <canvas id="bounceCanvas" width="220" height="220" class="w-full h-full"></canvas>
+                </div>
+            `;
+            initBounceGame();
+        }
+
+        function initBounceGame() {
+            bounceX = 30; bounceY = 100; bounceVY = 0; bounceVX = 0;
+            if (bounceInterval) clearInterval(bounceInterval);
+            bounceInterval = setInterval(updateBounce, 40);
+        }
+
+        function updateBounce() {
+            const canvas = document.getElementById('bounceCanvas');
+            if (!canvas) { clearInterval(bounceInterval); return; }
+            const ctx = canvas.getContext('2d');
+
+            bounceVY += 0.6; // Gravity
+            bounceY += bounceVY;
+            bounceX += bounceVX;
+
+            if (bounceY >= 180) {
+                bounceY = 180;
+                bounceVY = -7; // Bounce jump
+                playBeep(400, 'sine', 0.05);
+            }
+
+            if (bounceX < 10) bounceX = 10;
+            if (bounceX > 210) bounceX = 210;
+
+            // Draw Scene
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ground & Obstacles
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 200, canvas.width, 20);
+            ctx.fillStyle = '#b91c1c';
+            ctx.fillRect(100, 170, 15, 30); // Spike
+
+            // Spike collision check
+            if (bounceX > 90 && bounceX < 115 && bounceY > 150) {
+                playBeep(150, 'sawtooth', 0.2);
+                bounceX = 30; bounceY = 100;
+            }
+
+            // Ball
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(bounceX, bounceY, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // --- SPACE IMPACT GAME LOGIC ---
+        let spaceShipY = 80;
+        let bullets = [];
+        let enemies = [];
+        let spaceInterval = null;
+
+        function renderSpaceGame(viewport) {
+            viewport.innerHTML = `
+                <div class="relative bg-black w-full h-full">
+                    <canvas id="spaceCanvas" width="220" height="220" class="w-full h-full"></canvas>
+                </div>
+            `;
+            initSpaceGame();
+        }
+
+        function initSpaceGame() {
+            spaceShipY = 80; bullets = []; enemies = [];
+            if (spaceInterval) clearInterval(spaceInterval);
+            spaceInterval = setInterval(updateSpace, 50);
+        }
+
+        function updateSpace() {
+            const canvas = document.getElementById('spaceCanvas');
+            if (!canvas) { clearInterval(spaceInterval); return; }
+            const ctx = canvas.getContext('2d');
+
+            // Spawn enemies
+            if (Math.random() < 0.08) {
+                enemies.push({ x: 220, y: Math.random() * 180, alive: true });
+            }
+
+            // Move Bullets
+            bullets.forEach(b => b.x += 6);
+            bullets = bullets.filter(b => b.x < 220);
+
+            // Move Enemies
+            enemies.forEach(e => {
+                e.x -= 3;
+                // Hit check
+                bullets.forEach(b => {
+                    if (Math.abs(b.x - e.x) < 10 && Math.abs(b.y - e.y) < 10) {
+                        e.alive = false;
+                        playBeep(900, 'square', 0.05);
+                    }
+                });
+            });
+            enemies = enemies.filter(e => e.x > 0 && e.alive);
+
+            // Draw
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Player Ship
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(10, spaceShipY, 15, 10);
+
+            // Bullets
+            ctx.fillStyle = '#eab308';
+            bullets.forEach(b => ctx.fillRect(b.x, b.y, 4, 2));
+
+            // Enemies
+            ctx.fillStyle = '#ef4444';
+            enemies.forEach(e => ctx.fillRect(e.x, e.y, 12, 12));
+        }
+
+        let calcVal = '0';
+        function renderCalculator(viewport) {
+            viewport.innerHTML = `
+                <div class="p-2 bg-slate-900 text-white h-full flex flex-col justify-between">
+                    <div class="bg-slate-950 p-2 rounded text-left font-mono text-xl text-green-400 border border-slate-700 overflow-x-auto" id="calc-display">${calcVal}</div>
+                    <div class="text-[10px] text-slate-400 text-center">استخدم الأرقام للحساب</div>
+                </div>
+            `;
+        }
+
+        function pressKey(key) {
+            playBeep(600, 'sine', 0.03);
+
+            // Global Home Return
+            if (key === 'END') {
+                if (dialedNumber) {
+                    dialedNumber = '';
+                } else {
+                    currentState = 'HOME';
+                    playNokiaTune();
+                }
+                renderScreen();
+                return;
+            }
+
+            // Dialing on Home Screen
+            if (currentState === 'HOME') {
+                if ('0123456789*#'.includes(key)) {
+                    dialedNumber += key;
+                    renderScreen();
+                    return;
+                }
+                if (key === 'CALL') {
+                    if (dialedNumber) {
+                        alert('جاري الاتصال بـ: ' + dialedNumber);
+                        dialedNumber = '';
+                    } else {
+                        playNokiaTune();
+                    }
+                    return;
+                }
+                if (key === 'LSK') {
+                    currentState = 'MENU';
+                    selectedMenuIdx = 0;
+                    renderScreen();
+                    return;
+                }
+                if (key === 'RSK') {
+                    currentState = 'APP_CONTACTS';
+                    renderScreen();
+                    return;
+                }
+            }
+
+            // Menu Navigation
+            if (currentState === 'MENU') {
+                if (key === 'RIGHT') selectedMenuIdx = (selectedMenuIdx + 1) % menuItems.length;
+                if (key === 'LEFT') selectedMenuIdx = (selectedMenuIdx - 1 + menuItems.length) % menuItems.length;
+                if (key === 'DOWN') selectedMenuIdx = Math.min(menuItems.length - 1, selectedMenuIdx + 3);
+                if (key === 'UP') selectedMenuIdx = Math.max(0, selectedMenuIdx - 3);
+
+                if (key === 'OK' || key === 'LSK') {
+                    const selected = menuItems[selectedMenuIdx].id;
+                    if (selected === 'SNAKE') currentState = 'GAME_SNAKE';
+                    else if (selected === 'BOUNCE') currentState = 'GAME_BOUNCE';
+                    else if (selected === 'SPACE') currentState = 'GAME_SPACE';
+                    else if (selected === 'STORE') currentState = 'APP_STORE';
+                    else if (selected === 'GALLERY') currentState = 'APP_GALLERY';
+                    else if (selected === 'CONTACTS') currentState = 'APP_CONTACTS';
+                    else if (selected === 'CALC') currentState = 'APP_CALC';
+                    else if (selected === 'RADIO') currentState = 'APP_RADIO';
+                }
+                if (key === 'RSK') currentState = 'HOME';
+                renderScreen();
+                return;
+            }
+
+            // Game Controls Mapping
+            if (currentState === 'GAME_SNAKE') {
+                if (key === '2' || key === 'UP') snakeDir = 'UP';
+                if (key === '8' || key === 'DOWN') snakeDir = 'DOWN';
+                if (key === '4' || key === 'LEFT') snakeDir = 'LEFT';
+                if (key === '6' || key === 'RIGHT') snakeDir = 'RIGHT';
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initSnakeGame();
+            }
+
+            if (currentState === 'GAME_BOUNCE') {
+                if (key === '4' || key === 'LEFT') bounceVX = -3;
+                if (key === '6' || key === 'RIGHT') bounceVX = 3;
+                if (key === '2' || key === 'OK' || key === 'UP') bounceVY = -7;
+                if (key === 'RSK') currentState = 'MENU';
+                if (key === 'LSK') initBounceGame();
+            }
+
+            if (currentState === 'GAME_SPACE') {
+                if (key === '2' || key === 'UP') spaceShipY = Math.max(10, spaceShipY - 10);
+                if (key === '8' || key === 'DOWN') spaceShipY = Math.min(170, spaceShipY + 10);
+                if (key === 'OK' || key === '5' || key === 'LSK') {
+                    bullets.push({ x: 25, y: spaceShipY + 4 });
+                    playBeep(1000, 'square', 0.03);
+                }
+                if (key === 'RSK') currentState = 'MENU';
+            }
+
+            // Secondary Apps Navigation Back Button
+            if (['APP_STORE', 'APP_GALLERY', 'APP_CONTACTS', 'APP_CALC', 'APP_RADIO'].includes(currentState)) {
+                if (key === 'RSK') {
+                    currentState = 'MENU';
+                    renderScreen();
+                }
+            }
+
+            // Calculator logic
+            if (currentState === 'APP_CALC') {
+                if ('0123456789'.includes(key)) {
+                    calcVal = calcVal === '0' ? key : calcVal + key;
+                } else if (key === '*') {
+                    calcVal += '+';
+                } else if (key === '#') {
+                    calcVal += '-';
+                } else if (key === 'OK') {
+                    try { calcVal = String(eval(calcVal)); } catch(e) { calcVal = 'خطأ'; }
+                } else if (key === 'RSK') {
+                    calcVal = '0';
+                }
+                renderCalculator(document.getElementById('app-viewport'));
+            }
+        }
+
+        // Initialize Screen View on Load
+        window.onload = () => {
+            renderScreen();
+        };
+    </script>
+</body>
+</html>
